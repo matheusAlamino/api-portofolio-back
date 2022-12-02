@@ -50,4 +50,28 @@ router.get('/getAll', async (req, res) => {
     }
 });
 
+router.get('/getThumbnails', async (req, res) => {
+    try {
+        let client = new Vimeo(clientId, clientSecret, accessToken);
+        const fieldsThumb = '?fields=name,pictures.sizes';
+
+        await client.request({
+            method: 'GET',
+            path: `/me/videos${fieldsThumb}`,
+            query: {
+                filter_tag: 'all',
+                per_page: 100
+            }
+        }, function (error, body, status_code, headers) {
+            if (error) {
+                return res.status(400).send({ error: 'Error trying to get the reel video' });
+            }
+
+            return res.send(body);
+        })
+    } catch (error) {
+        return res.status(400).send({ error: 'Not possible search the videos' });
+    }
+});
+
 module.exports = app => app.use('/vimeo', router);
